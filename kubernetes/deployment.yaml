@@ -28,7 +28,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: siyuan-secret
-              key: ACCESSAUTHCODE
+              key: SIYUAN_ACCESS_AUTH_CODE
               optional: true
         volumeMounts:
         - name: siyuan-data
