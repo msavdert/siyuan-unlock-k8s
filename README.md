@@ -35,26 +35,17 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
    ```
    Then edit the `.env` file to set your configuration values
 
-3. Replace environment variables in Kubernetes files:
-   Before applying the configuration to your cluster, replace the placeholders in the Kubernetes files with your environment variable values from the `.env` file.
-
-   For ConfigMap (`kubernetes/configmap.yaml`):
+3. Create ConfigMap and Secret directly from the .env file:
    ```bash
-   sed -i "s/\${LANG}/$(grep LANG .env | cut -d= -f2)/g" kubernetes/configmap.yaml
-   sed -i "s/\${LC_ALL}/$(grep LC_ALL .env | cut -d= -f2)/g" kubernetes/configmap.yaml
-   sed -i "s/\${UI_THEME}/$(grep UI_THEME .env | cut -d= -f2)/g" kubernetes/configmap.yaml
-   sed -i "s/\${APPEARANCE_MODE}/$(grep APPEARANCE_MODE .env | cut -d= -f2)/g" kubernetes/configmap.yaml
+   # Create ConfigMap from .env
+   kubectl create configmap siyuan-config --from-env-file=.env
+
+   # Create Secret from .env
+   kubectl create secret generic siyuan-secret --from-env-file=.env
    ```
 
-   For Secret (`kubernetes/secret.yaml`):
+4. Apply the remaining Kubernetes manifests:
    ```bash
-   sed -i "s/\${ACCESSAUTHCODE}/$(grep ACCESSAUTHCODE .env | cut -d= -f2)/g" kubernetes/secret.yaml
-   ```
-
-4. Apply the Kubernetes manifests:
-   ```bash
-   kubectl apply -f kubernetes/secret.yaml
-   kubectl apply -f kubernetes/configmap.yaml
    kubectl apply -f kubernetes/pvc.yaml
    kubectl apply -f kubernetes/deployment.yaml
    kubectl apply -f kubernetes/service.yaml
@@ -65,15 +56,12 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 ### Environment Variables
 
-All environment variables are managed in the `.env` file (copied from `.env.example`):
+All configuration is managed in the `.env` file (copied from `.env.example`):
 
-1. **ConfigMap Variables**:
-   - `LANG` and `LC_ALL`: Language settings (default: en_US.UTF-8)
-   - `UI_THEME`: UI theme setting (default: dark)
-   - `APPEARANCE_MODE`: Appearance mode setting (default: auto)
-
-2. **Secret Variables**:
-   - `ACCESSAUTHCODE`: Secure access password for SiYuan
+- `LANG` and `LC_ALL`: Language settings (default: en_US.UTF-8)
+- `UI_THEME`: UI theme setting (default: dark)
+- `APPEARANCE_MODE`: Appearance mode setting (default: auto)
+- `ACCESSAUTHCODE`: Secure access password for SiYuan
 
 ### Access Options
 
@@ -100,7 +88,7 @@ All environment variables are managed in the `.env` file (copied from `.env.exam
 
 - **`.env.example`**: Template file containing placeholder values, committed to Git
 - **`.env`**: Your actual configuration file with real values, excluded from Git
-- **`kubernetes/*.yaml`**: Kubernetes configuration files with variable placeholders
+- **`kubernetes/*.yaml`**: Kubernetes configuration files
 
 ## Security Best Practices
 
