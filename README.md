@@ -35,16 +35,21 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
    ```
    Then edit the `.env` file to set your configuration values
 
-3. Create ConfigMap and Secret directly from the .env file:
+3. Create the namespace first:
    ```bash
-   # Create ConfigMap from .env
-   kubectl create configmap siyuan-config --from-env-file=.env
-
-   # Create Secret from .env
-   kubectl create secret generic siyuan-secret --from-env-file=.env
+   kubectl create namespace siyuan
    ```
 
-4. Apply the remaining Kubernetes manifests:
+4. Create ConfigMap and Secret directly from the .env file:
+   ```bash
+   # Create ConfigMap from .env in the siyuan namespace
+   kubectl create configmap siyuan-config --from-env-file=.env -n siyuan
+
+   # Create Secret from .env in the siyuan namespace
+   kubectl create secret generic siyuan-secret --from-env-file=.env -n siyuan
+   ```
+
+5. Apply the remaining Kubernetes manifests:
    ```bash
    kubectl apply -f kubernetes/pvc.yaml
    kubectl apply -f kubernetes/deployment.yaml
@@ -73,12 +78,12 @@ All configuration is managed in the `.env` file (copied from `.env.example`):
    
    Get the external IP with:
    ```bash
-   kubectl get svc siyuan
+   kubectl get svc siyuan -n siyuan
    ```
 
 2. **Port Forwarding** (for local testing):
    ```bash
-   kubectl port-forward svc/siyuan 6806:6806
+   kubectl port-forward svc/siyuan 6806:6806 -n siyuan
    ```
    Then visit `http://localhost:6806` in your browser.
 
@@ -104,10 +109,31 @@ All configuration is managed in the `.env` file (copied from `.env.example`):
 
 ## Troubleshooting
 
-- Check pod status: `kubectl get pods -l app=siyuan`
-- View logs: `kubectl logs -l app=siyuan`
-- Describe pod: `kubectl describe pod -l app=siyuan`
-- Check LoadBalancer status: `kubectl get svc siyuan`
+- Check pod status: `kubectl get pods -l app=siyuan -n siyuan`
+- View logs: `kubectl logs -l app=siyuan -n siyuan`
+- Describe pod: `kubectl describe pod -l app=siyuan -n siyuan`
+- Check LoadBalancer status: `kubectl get svc siyuan -n siyuan`
+
+## Uninstalling
+
+To completely remove SiYuan and all associated resources from your Kubernetes cluster:
+
+1. Remove individual resources (if you want to delete specific components):
+   ```bash
+   kubectl delete deployment siyuan -n siyuan
+   kubectl delete service siyuan -n siyuan
+   kubectl delete ingress siyuan-ingress -n siyuan
+   kubectl delete configmap siyuan-config -n siyuan
+   kubectl delete secret siyuan-secret -n siyuan
+   kubectl delete pvc siyuan-data -n siyuan
+   ```
+
+2. Or simply delete the entire namespace to remove everything at once:
+   ```bash
+   kubectl delete namespace siyuan
+   ```
+   
+   Note: Deleting the namespace will remove ALL resources associated with SiYuan, including persistent volumes. This means all your data will be permanently deleted.
 
 ## License
 

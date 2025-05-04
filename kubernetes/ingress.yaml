@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: siyuan-ingress
+  namespace: siyuan
   annotations:
     kubernetes.io/ingress.class: nginx
     # SSL sertifikası otomatik oluşturma (isteğe bağlı)
