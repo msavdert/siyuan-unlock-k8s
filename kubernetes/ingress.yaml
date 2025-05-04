@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: siyuan-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # SSL sertifikası otomatik oluşturma (isteğe bağlı)
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  # TLS yapılandırması (isteğe bağlı)
+  # tls:
+  # - hosts:
+  #   - siyuan.example.com
+  #   secretName: siyuan-tls
+  rules:
+  - host: siyuan.example.com  # Kendi domain adınızla değiştirin
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: siyuan
+            port:
+              number: 6806

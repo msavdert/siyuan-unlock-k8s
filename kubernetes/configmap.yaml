@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: siyuan-config
+data:
+  LANG: "en_US.UTF-8"
+  LC_ALL: "en_US.UTF-8"
+  # Optional access password
+  # ACCESSAUTHCODE: "your_password"
+  # Other environment variables can be added here
+  UI_THEME: "dark"
+  APPEARANCE_MODE: "auto"
