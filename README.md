@@ -8,7 +8,6 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 ## Components
 
-- **Namespace**: Dedicated "siyuan" namespace for all resources
 - **ConfigMap**: Environment variables for SiYuan configuration
 - **Secret**: Secure storage for sensitive information like access passwords
 - **PersistentVolumeClaim**: For storing SiYuan workspaces and data
@@ -38,7 +37,7 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 3. Create the namespace first:
    ```bash
-   kubectl apply -f kubernetes/namespace.yaml
+   kubectl create namespace siyuan
    ```
 
 4. Create ConfigMap and Secret:
