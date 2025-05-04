@@ -8,6 +8,7 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 ## Components
 
+- **Namespace**: Dedicated "siyuan" namespace for all resources
 - **ConfigMap**: Environment variables for SiYuan configuration
 - **Secret**: Secure storage for sensitive information like access passwords
 - **PersistentVolumeClaim**: For storing SiYuan workspaces and data
@@ -37,16 +38,31 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 3. Create the namespace first:
    ```bash
-   kubectl create namespace siyuan
+   kubectl apply -f kubernetes/namespace.yaml
    ```
 
-4. Create ConfigMap and Secret directly from the .env file:
+4. Create ConfigMap and Secret:
+
+   **Option 1:** Create from .env file:
    ```bash
    # Create ConfigMap from .env in the siyuan namespace
    kubectl create configmap siyuan-config --from-env-file=.env -n siyuan
 
    # Create Secret from .env in the siyuan namespace
    kubectl create secret generic siyuan-secret --from-env-file=.env -n siyuan
+   ```
+
+   **Option 2:** Create with auto-generated access token:
+   ```bash
+   # First create ConfigMap from .env
+   kubectl create configmap siyuan-config --from-env-file=.env -n siyuan
+   
+   # Generate a random secure token and create the Secret
+   RANDOM_TOKEN=$(openssl rand -base64 32)
+   kubectl create secret generic siyuan-secret --from-literal=ACCESSAUTHCODE=$RANDOM_TOKEN -n siyuan
+   
+   # Save the token for your reference (optional)
+   echo "Your generated access token is: $RANDOM_TOKEN"
    ```
 
 5. Apply the remaining Kubernetes manifests:
@@ -66,7 +82,16 @@ All configuration is managed in the `.env` file (copied from `.env.example`):
 - `LANG` and `LC_ALL`: Language settings (default: en_US.UTF-8)
 - `UI_THEME`: UI theme setting (default: dark)
 - `APPEARANCE_MODE`: Appearance mode setting (default: auto)
-- `ACCESSAUTHCODE`: Secure access password for SiYuan
+- `ACCESSAUTHCODE`: Secure access password for SiYuan (can be auto-generated, see installation options)
+
+### Auto-generated Access Token
+
+When using the auto-generated token option, the deployment will use this randomly generated token as the access password for SiYuan. Make sure to note down the token when it's displayed after running the command, as you'll need it to log in to the application.
+
+If you forget your token, you can retrieve it using:
+```bash
+kubectl get secret siyuan-secret -n siyuan -o jsonpath='{.data.ACCESSAUTHCODE}' | base64 --decode
+```
 
 ### Access Options
 
@@ -98,8 +123,9 @@ All configuration is managed in the `.env` file (copied from `.env.example`):
 ## Security Best Practices
 
 - **Keep your `.env` file private**: This file contains sensitive information and should not be committed to Git.
-- When deploying to production environments, consider using a secret management solution like Hashicorp Vault or cloud provider secret stores.
-- You can also use Sealed Secrets or External Secrets for GitOps workflows.
+- When deploying to production environments, consider using a secure secret management solution.
+- Consider using the auto-generated token option for better security.
+- The deployment is configured with `optional: true` for the ACCESSAUTHCODE, which means the application will start even if no access code is provided.
 
 ## Customization
 

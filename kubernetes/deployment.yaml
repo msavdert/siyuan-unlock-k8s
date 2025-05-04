@@ -29,6 +29,7 @@ spec:
             secretKeyRef:
               name: siyuan-secret
               key: ACCESSAUTHCODE
+              optional: true
         volumeMounts:
         - name: siyuan-data
           mountPath: /siyuan/workspace
