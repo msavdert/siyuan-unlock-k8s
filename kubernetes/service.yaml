@@ -8,4 +8,4 @@ spec:
   ports:
   - port: 6806
     targetPort: 6806
-  type: ClusterIP
+  type: LoadBalancer

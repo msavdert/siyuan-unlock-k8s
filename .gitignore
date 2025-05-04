@@ -13,10 +13,6 @@ Thumbs.db
 .env.local
 *.local
 
-# Kubernetes secrets (if any)
-*secret*.yaml
-*secrets*.yaml
-
 # Logs
 *.log
 
