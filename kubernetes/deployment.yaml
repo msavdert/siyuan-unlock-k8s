@@ -24,7 +24,7 @@ spec:
         - configMapRef:
             name: siyuan-config
         env:
-        - name: ACCESSAUTHCODE
+        - name: SIYUAN_ACCESS_AUTH_CODE
           valueFrom:
             secretKeyRef:
               name: siyuan-secret
@@ -34,8 +34,11 @@ spec:
         - name: siyuan-data
           mountPath: /siyuan/workspace
         securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
+          allowPrivilegeEscalation: true
+          runAsUser: 0  # Run as root
+          runAsGroup: 0
+      securityContext:
+        fsGroup: 1000
       volumes:
       - name: siyuan-data
         persistentVolumeClaim:
