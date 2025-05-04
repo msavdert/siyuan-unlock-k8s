@@ -9,6 +9,7 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 ## Components
 
 - **ConfigMap**: Environment variables for SiYuan configuration
+- **Secret**: Secure storage for sensitive information like access passwords
 - **PersistentVolumeClaim**: For storing SiYuan workspaces and data
 - **Deployment**: The SiYuan application container configuration
 - **Service**: Internal networking configuration
@@ -28,8 +29,12 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
    cd siyuan
    ```
 
-2. Apply the Kubernetes manifests:
+2. Update the secret value:
+   Edit `kubernetes/secret.yaml` and replace `your-secure-access-code` with your preferred access password.
+
+3. Apply the Kubernetes manifests:
    ```bash
+   kubectl apply -f kubernetes/secret.yaml
    kubectl apply -f kubernetes/configmap.yaml
    kubectl apply -f kubernetes/pvc.yaml
    kubectl apply -f kubernetes/deployment.yaml
@@ -41,12 +46,15 @@ This setup deploys the [siyuan-unlock](https://github.com/appdev/siyuan-unlock) 
 
 ### Environment Variables
 
-All environment variables are managed in the `kubernetes/configmap.yaml` file. Key settings include:
+Environment variables are managed in two locations:
 
-- `LANG` and `LC_ALL`: Language settings (default: en_US.UTF-8)
-- `ACCESSAUTHCODE`: Optional access password (commented out by default)
-- `UI_THEME`: UI theme setting (default: dark)
-- `APPEARANCE_MODE`: Appearance mode setting (default: auto)
+1. **ConfigMap** (`kubernetes/configmap.yaml`):
+   - `LANG` and `LC_ALL`: Language settings (default: en_US.UTF-8)
+   - `UI_THEME`: UI theme setting (default: dark)
+   - `APPEARANCE_MODE`: Appearance mode setting (default: auto)
+
+2. **Secret** (`kubernetes/secret.yaml`):
+   - `ACCESSAUTHCODE`: Secure access password
 
 ### Access Options
 
@@ -57,6 +65,16 @@ All environment variables are managed in the `kubernetes/configmap.yaml` file. K
    Then visit `http://localhost:6806` in your browser.
 
 2. **Ingress**: Configure your DNS to point `siyuan.example.com` to your Ingress controller.
+
+## Security Best Practices
+
+- **Never commit secrets with real values to Git**. The provided secret.yaml contains a placeholder.
+- Consider using a secure secret management solution like Hashicorp Vault or AWS Secrets Manager for production.
+- You can also use Sealed Secrets or External Secrets for GitOps workflows.
+- For local development, you can use a .env file (ignored by Git) to store the real values, then create the secret using: 
+  ```bash
+  kubectl create secret generic siyuan-secret --from-env-file=.env
+  ```
 
 ## Customization
 

@@ -22,6 +22,12 @@ spec:
         envFrom:
         - configMapRef:
             name: siyuan-config
+        env:
+        - name: ACCESSAUTHCODE
+          valueFrom:
+            secretKeyRef:
+              name: siyuan-secret
+              key: ACCESSAUTHCODE
         volumeMounts:
         - name: siyuan-data
           mountPath: /siyuan/workspace
